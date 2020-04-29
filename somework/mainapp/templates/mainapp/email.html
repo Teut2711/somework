@@ -1,0 +1,37 @@
+{% extends "mainapp/base.html" %}
+
+{% block content %}
+ 
+
+<script>
+document.querySelector('.custom-file-input').addEventListener('change', (event) => {
+    document.querySelector('.custom-file-label').textContent = event.target.files[0]["name"];
+});
+</script>
+
+
+
+<div class="jumbotron">
+
+  <h1 class="display-4">Mailer!</h1>
+
+  <p class="lead">Mail to someone</p>
+
+  <hr class="my-4">
+
+    <div class="custom-file">
+
+    <form action="" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}       
+            <input type="file" class="custom-file-input" name="filename" id="validatedCustomFile" onchange ="changetxt()" required>
+            <label class="custom-file-label" for="validatedCustomFile">Choose file...</label>
+            <p></p>
+            
+    </form>            <button class="btn btn-primary btn-lg">Submit</button>
+
+    </div>  
+
+</div>
+
+
+{% endblock %}
