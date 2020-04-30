@@ -1,7 +1,11 @@
 from django.shortcuts import render
+from django.core.files.storage import FileSystemStorage
 
+from .forms import UploadFileForm
+    
 # Create your views here.
 
+from .backend.mailer import mailer
 
 def homepage(request):
     return render(request, 'mainapp/index.html')
@@ -24,7 +28,12 @@ def query(request):
 
 
 def email(request):
-    if request.method == "POST":
-        print(request.FILES["filename"], request.FILES)
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            print(request.FILES['filename'])
+            
+    else:
+        form = UploadFileForm()
     
-    return render(request, 'mainapp/email.html')
+    return render(request, 'mainapp/email.html', {"form":form})

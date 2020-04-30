@@ -3,11 +3,6 @@
 {% block content %}
  
 
-<script>
-document.querySelector('.custom-file-input').addEventListener('change', (event) => {
-    document.querySelector('.custom-file-label').textContent = event.target.files[0]["name"];
-});
-</script>
 
 
 
@@ -20,16 +15,25 @@ document.querySelector('.custom-file-input').addEventListener('change', (event) 
   <hr class="my-4">
 
     <div class="custom-file">
+     <form action="POST" enctype="multipart/form-data">
+            {% csrf_token %}       
 
+       {{ form }}
+     </form>
     <form action="" method="POST" enctype="multipart/form-data">
             {% csrf_token %}       
-            <input type="file" class="custom-file-input" name="filename" id="validatedCustomFile" onchange ="changetxt()" required>
+            <input type="file" class="custom-file-input" name="filename" id="validatedCustomFile"  required>
             <label class="custom-file-label" for="validatedCustomFile">Choose file...</label>
             <p></p>
-            
-    </form>            <button class="btn btn-primary btn-lg">Submit</button>
-
+            <input type="submit" class="btn btn-primary btn-lg" value="Submit">
+    </form>
     </div>  
+
+<script>
+document.querySelector('.custom-file-input').addEventListener('change', (event) => {
+    document.querySelector('.custom-file-label').textContent = event.target.files[0]["name"];
+});
+</script>
 
 </div>
 
