@@ -1,6 +1,8 @@
 {% extends "mainapp/base.html" %}
 {% block content %}
 <script>
-document.getElementById("myDIV").classList.add("mystyle"); 
+    Object.values(document.getElementsByClassName("nav-link")).filter((ele)=>{
+    return ele.textContent == "Admin";
+    })[0].classList.add("active");
 </script>
 {% endblock %}

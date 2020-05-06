@@ -1,7 +1,8 @@
 {% extends "mainapp/base.html" %}
 
 {% block content %}
- 
+ {% load crispy_forms_tags %}
+
 
 
 
@@ -18,18 +19,26 @@
 
     <form action="" method="POST" enctype="multipart/form-data">
             {% csrf_token %}   
-            {{ form.as_p }}   
+            {{ form|crispy }}   
             <input type="submit" class="btn btn-primary btn-lg" value="Submit">
     </form>
     </div>  
 
 <script>
+Object.values(document.getElementsByClassName("nav-link")).filter((ele)=>{
+return ele.textContent == "E-mail";
+})[0].classList.add("active");
 document.querySelector('.custom-file-input').addEventListener('change', (event) => {
     document.querySelector('.custom-file-label').textContent = event.target.files[0]["name"];
 });
+
 </script>
 
 </div>
 
+<!-- Compressed CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.6.3/dist/css/foundation.min.css" integrity="sha256-ogmFxjqiTMnZhxCqVmcqTvjfe1Y/ec4WaRj/aQPvn+I=" crossorigin="anonymous">
 
+<!-- Compressed JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/foundation-sites@6.6.3/dist/js/foundation.min.js" integrity="sha256-pRF3zifJRA9jXGv++b06qwtSqX1byFQOLjqa2PTEb2o=" crossorigin="anonymous"></script>
 {% endblock %}

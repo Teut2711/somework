@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
 
-from .forms import UploadFileForm
+from .forms import EmailForm, MasterForm
     
 # Create your views here.
 
@@ -14,9 +14,19 @@ def homepage(request):
 def adminn(request):
     return render(request, 'mainapp/adminn.html')
 
-
 def master(request):
-    return render(request, 'mainapp/master.html')
+    if request.method == 'POST':
+        form = MasterForm(request.POST, request.FILES)
+        if form.is_valid():
+            mailer.main(*list(map(lambda x:request.POST.get(x).strip(), 
+                                  ['host','emailaddress','password'])), 
+                        request.FILES["filepath"])
+
+            
+    else:
+        form = MasterForm()
+    
+    return render(request, 'mainapp/master.html', {"form":form})
 
 
 def report(request):
@@ -29,7 +39,7 @@ def query(request):
 
 def email(request):
     if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
+        form = EmailForm(request.POST, request.FILES)
         if form.is_valid():
             mailer.main(*list(map(lambda x:request.POST.get(x).strip(), 
                                   ['host','emailaddress','password'])), 
@@ -37,6 +47,6 @@ def email(request):
 
             
     else:
-        form = UploadFileForm()
+        form = EmailForm()
     
     return render(request, 'mainapp/email.html', {"form":form})

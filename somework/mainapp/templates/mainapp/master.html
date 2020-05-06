@@ -1,3 +1,73 @@
 {% extends "mainapp/base.html" %} {% block content %}
-document.getElementById("myDIV").classList.add("mystyle"); 
+<style>
+.displayoff{
+    display:none;
+}
+.mainbox{
+    padding:2%;
+    display:flex;
+    justify-content:space-evenly;
+
+}
+
+a:hover{
+text-decoration:none;
+font-weight:400;
+}
+
+.formclass{
+    display:grid;
+    align-items:center;
+}
+
+
+</style>
+
+<div class="mainbox" >
+    
+    <ul class="list-group nsdlbenpos">
+      <li class="list-group-item"><button>NSDL Benpos Import</button></li>
+
+      
+    </ul>
+    <ul class="list-group cdslbenpos">
+      <li class="list-group-item"><button>CDSL Benpos Import</button></li>
+      
+    </ul>
+</div>
+<div  class="formclass displayoff">
+    
+    <form action="" method="POST" enctype="multipart/form-data">  
+                 
+                {% csrf_token %}   
+                {{ form|crispy }}
+                   
+                <input type="submit" class="btn btn-primary btn-lg" value="Submit">
+        </form>
+        </div>
+    
+</div>
+
+
+
+
+
+<script>
+    Object.values(document.getElementsByClassName("nav-link")).filter((ele)=>{
+    return ele.textContent == "Master";
+    })[0].classList.add("active");
+
+document.querySelector('.cdslbenpos>li').addEventListener('click', function(event){
+    document.querySelector('.mainbox').querySelector(".nsdlbenpos").parentNode.removeChild(ele);
+    document.querySelector('.formclass').classList.remove('displayoff'); 
+})   
+
+document.querySelector('.nsdlbenpos>li').addEventListener('click', function(event){
+    var ele  = document.querySelector('.mainbox').querySelector(".cdslbenpos");
+     ele.parentNode.removeChild(ele);
+     document.querySelector('.formclass').classList.remove('displayoff'); 
+   
+})
+
+</script>
 {% endblock %}
