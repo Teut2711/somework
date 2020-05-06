@@ -31,7 +31,10 @@ def email(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            print(request.FILES['filename'])
+            mailer.main(*list(map(lambda x:request.POST.get(x).strip(), 
+                                  ['host','emailaddress','password'])), 
+                        request.FILES["filepath"])
+
             
     else:
         form = UploadFileForm()

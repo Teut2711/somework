@@ -15,16 +15,10 @@
   <hr class="my-4">
 
     <div class="custom-file">
-     <form action="POST" enctype="multipart/form-data">
-            {% csrf_token %}       
 
-       {{ form }}
-     </form>
     <form action="" method="POST" enctype="multipart/form-data">
-            {% csrf_token %}       
-            <input type="file" class="custom-file-input" name="filename" id="validatedCustomFile"  required>
-            <label class="custom-file-label" for="validatedCustomFile">Choose file...</label>
-            <p></p>
+            {% csrf_token %}   
+            {{ form.as_p }}   
             <input type="submit" class="btn btn-primary btn-lg" value="Submit">
     </form>
     </div>  
