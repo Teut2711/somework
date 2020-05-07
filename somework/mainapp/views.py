@@ -5,7 +5,9 @@ from .forms import EmailForm, MasterForm
     
 # Create your views here.
 
-from .backend.mailer import mailer
+from .backend.mailer import emailpy
+from .backend.master import nsdl, cdsl
+
 
 def homepage(request):
     return render(request, 'mainapp/index.html')
@@ -18,9 +20,10 @@ def master(request):
     if request.method == 'POST':
         form = MasterForm(request.POST, request.FILES)
         if form.is_valid():
-            mailer.main(*list(map(lambda x:request.POST.get(x).strip(), 
-                                  ['host','emailaddress','password'])), 
-                        request.FILES["filepath"])
+            if request.POST['hidden'] == 'nsdlbenpos':
+                nsdl.main(request.FILES["filepath"])
+            else:
+                cdsl.main(request.FILES["filepath"])
 
             
     else:
@@ -41,7 +44,7 @@ def email(request):
     if request.method == 'POST':
         form = EmailForm(request.POST, request.FILES)
         if form.is_valid():
-            mailer.main(*list(map(lambda x:request.POST.get(x).strip(), 
+            emailpy.main(*list(map(lambda x:request.POST.get(x).strip(), 
                                   ['host','emailaddress','password'])), 
                         request.FILES["filepath"])
 
