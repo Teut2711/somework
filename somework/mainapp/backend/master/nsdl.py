@@ -4,9 +4,10 @@ import pandas as pd
 import pickle
 import io
 
+from abc import ABCMeta
 
-class Dematad:
 
+class Meta1(metaclass=ABCMeta):
     def __init__(self, cols_file, df):
         self.cols = self.get_cols(cols_file)
         self.data = self.get_data(df)
@@ -19,26 +20,27 @@ class Dematad:
     def get_data(self, df):
         return df.loc[:, self.cols]
 
-    def clean(self):
-        return data.drop_duplicates(subset=["DPID", "CLID"], keep='first', inplace=True)
+    def clean(self, data):
+        pass
 
 
-class Demathol:
+class Dematad(Meta1):
 
     def __init__(self, cols_file, df):
-        self.cols = self.get_cols(cols_file)
-        self.data = self.get_data(df)
+        super().__init__(cols_file, df)
+        self.data = self.clean(self.data)
 
-    def get_cols(self, cols_file):
-        with open(cols_file, "rb") as p:
-            cols = pickle.load(p)
-        return cols
+    def clean(self, data):
+        return self.data.drop_duplicates(subset=["DPID", "CLID"], keep='first', inplace=True)
 
-    def get_data(self, df):
-        return df.loc[:, self.cols]
 
-    def clean(self):
-        return data.drop_duplicates(subset=["DPID", "CLID"], keep='first', inplace=True)
+class Demathol(Meta1):
+    def __init__(self, cols_file, df):
+        super().__init__(cols_file, df)
+        #self.data = self.clean(self.data)
+
+    def clean(self, data):
+        return self.data.drop_duplicates(subset=["DPID", "CLID"], keep='first', inplace=True)
 
 
 class PrepareDf:
@@ -47,8 +49,9 @@ class PrepareDf:
         cols = self.get_col_names(main_cols_loc)
         table = self.get_table_from_file(file_obj)
         df = self.get_df_from_table(table, cols)
-        self.dematad(dematad_cols_loc, df)
-        self.demathol(demathol_cols_loc, df)
+
+        self.dematad = Dematad(dematad_cols_loc, df)
+        self.demathol = Demathol(demathol_cols_loc, df)
 
     def get_col_names(self, main_cols_loc):
         with open(main_cols_loc, "rb") as p:
@@ -56,23 +59,19 @@ class PrepareDf:
         return cols
 
     def get_table_from_file(self, file_obj):
-        
+
         data = file_obj.readlines()
         for k, i in enumerate(data):
-            try:
-                data[k] = i.decode()
-            except Exception as e:
-                print(e.message)
-                break    
-
+            data[k] = i.decode()
         for i in range(1, len(data)):
-            
+
             if data[i-1].startswith("01") and data[i].startswith("01"):
                 data[i-1] = None
             else:
                 data[i] = data[i].strip()
 
         table = list(filter(None, data))
+
         return table
 
     def get_df_from_table(self, table, cols):
@@ -96,19 +95,9 @@ class PrepareDf:
         df = pd.concat(pd_data, ignore_index=True)
         return df
 
-    def dematad(self, dematad_cols_loc, df):
-        obj = Dematad(dematad_cols_loc, df)
-        obj.clean()
-        return obj.data
-
-    def demathol(self, demathol_cols_loc, df):
-        obj = Dematad(demathol_cols_loc, df)
-        obj.clean()
-        return obj.data
-
 
 def main(obj):
-    
+
     df = PrepareDf(os.path.join(os.getcwd(), 'mainapp', 'backend',
                                 'master', 'cols', 'cols.pk'),
                    os.path.join(os.getcwd(), 'mainapp', 'backend',
@@ -116,8 +105,8 @@ def main(obj):
                    os.path.join(os.getcwd(), 'mainapp', 'backend',
                                 'master', 'cols', 'demathol.pk'),
                    obj)
-    
-    # dematad = df.dematad()
-    # dematad.to_csv("junk.csv")
-    # demathol = df.demathol()
-    # conn = sqlite3.connect("MASS.db")
+
+    dematad = df.dematad
+
+    demathol = df.demathol
+    conn = sqlite3.connect("MASS.db")

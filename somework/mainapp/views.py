@@ -16,14 +16,16 @@ def homepage(request):
 def adminn(request):
     return render(request, 'mainapp/adminn.html')
 
+
 def master(request):
     if request.method == 'POST':
         form = MasterForm(request.POST, request.FILES)
         if form.is_valid():
+            
             if request.POST['hidden'] == 'nsdlbenpos':
-                nsdl.main(request.FILES["filepath"])
+                nsdl.main(form.cleaned_data.get('filepath'))
             else:
-                cdsl.main(request.FILES["filepath"])
+                cdsl.main(form.cleaned_data.get('filepath'))
 
             
     else:

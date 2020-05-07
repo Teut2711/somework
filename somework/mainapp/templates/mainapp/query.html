@@ -1,6 +1,7 @@
 {% extends "mainapp/base.html" %} {% block content %}
-<Script>
-Object.values(document.getElementsByClassName("nav-link")).filter((ele)=>{
-return ele.textContent == "Query";
-})[0].classList.add("active");</Script>
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'mainapp/master.css' %}">
+
+<script src="{% static "mainapp/master.js" %}"></script>
+
 {% endblock content %}

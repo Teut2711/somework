@@ -1,8 +1,9 @@
 {% extends "mainapp/base.html" %}
 {% block content %}
-<script>
-    Object.values(document.getElementsByClassName("nav-link")).filter((ele)=>{
-    return ele.textContent == "Admin";
-    })[0].classList.add("active");
-</script>
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'mainapp/adminn.css' %}">
+
+
+<script src="{% static "mainapp/adminn.js" %}"></script>
+
 {% endblock %}
