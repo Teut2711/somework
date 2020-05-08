@@ -26,7 +26,6 @@ def master(request):
                 nsdl.main(form.cleaned_data.get('filepath'))
             else:
                 cdsl.main(form.cleaned_data.get('filepath'))
-
             
     else:
         form = MasterForm()

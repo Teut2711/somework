@@ -1,3 +1,5 @@
+
+from decouple import config
 """
 Django settings for somework project.
 
@@ -20,10 +22,10 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'byyyix6x&53d5*(%)23pg13)e=+@u#yfnkvlko@p50$uraqcle'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG')
 
 ALLOWED_HOSTS = []
 
@@ -77,10 +79,21 @@ WSGI_APPLICATION = 'somework.wsgi.application'
 
 DATABASES = {
     'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
+    },
+
+    'sqlite3': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        
+
     }
+
+
 }
 
 
