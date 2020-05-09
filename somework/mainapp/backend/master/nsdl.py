@@ -1,4 +1,7 @@
+from functools import wraps
+from decouple import config
 from mainapp import models
+
 
 from abc import ABCMeta
 import io
@@ -7,6 +10,7 @@ import pandas as pd
 import sqlite3
 import os
 import pathlib
+from more_itertools.more import split_before
 PATH = pathlib.Path(__file__).parent
 
 
@@ -16,98 +20,71 @@ def get_cols(cols_file):
     return cols
 
 
-# class Meta1(metaclass=ABCMeta):
-#     def __init__(self, cols_file, df):
-#         self.cols = self.get_cols(cols_file)
-#         #self.data = self.get_data(df)
+class GetDataFrame:
 
-#     def get_cols(self, cols_file):
-#         with open(cols_file, "rb") as p:
-#             cols = pickle.load(p)
-#         return cols
+    @staticmethod
+    def read_file_obj(file_obj, cols):
+        # from nodeirc by _habnabit
+        for chunk in split_before(
+            (l.decode().strip() for l in file_obj),
+                lambda l: l.startswith('01')):
+            if len(chunk) <= 1:
+                continue
+            yield GetDataFrame.chunk_to_df(chunk, cols)
+        # from nodeirc by _habnabit
 
-#     def get_data(self, df):
-#         return df.loc[:, self.cols]
+    @staticmethod
+    def chunk_to_df(chunk, cols):
+        isin, date = chunk[0].split("##")[1:3]
+        chunk = chunk[1:]
+        data = [i.split("##")[2:] for i in chunk]
 
-#     def clean(self, data):
-#         pass
-
-
-# class Dematad(Meta1):
-
-#     def __init__(self, cols_file, df):
-#         super().__init__(cols_file, df)
-#         #self.data = self.clean(self.data)
-
-#     def clean(self, data):
-#         return self.data.drop_duplicates(subset=["DPID", "CLID"], keep='first', inplace=True)
-
-# class Demathol(Meta1):
-#     def __init__(self, cols_file, df):
-#         super().__init__(cols_file, df)
-#         #self.data = self.clean(self.data)
-
-#     def clean(self, data):
-#         return self.data.drop_duplicates(subset=["DPID", "CLID"], keep='first', inplace=True)
-
-
-class PrepareDf:
-
-    def __init__(self, main_cols_loc, file_obj):
-        cols = self.get_col_names(main_cols_loc)
-        table = self.get_table_from_file(file_obj)
-        self.dataframe = self.get_df_from_table(table, cols)
-
-
-    def get_table_from_file(self, file_obj):
-
-        data = file_obj.readlines()
-        
-        for k, i in enumerate(data):
-            data[k] = i.decode()
-
-        for i in range(1, len(data)):
-
-            if data[i-1].startswith("01") and data[i].startswith("01"):
-                data[i-1] = None
-            else:
-                data[i] = data[i].strip()
-
-        table = list(filter(None, data))
-
-        return table
-
-    def get_df_from_table(self, table, cols):
-        i = 0
-        pd_data = []
-        while i < len(table):
-            if table[i].startswith("01"):
-                isin, date = table[i].split("##")[1:3]
-
-                data = []
-                i += 1
-                while i < len(table) and not(table[i].startswith("01")):
-                    data.append(table[i].split("##")[2:])
-                    i += 1
-
-                temp = pd.DataFrame(data=data, columns=cols)
-                temp["ISEN"] = isin
-                temp["DATE"] = date
-                pd_data.append(temp)
-
-        df = pd.concat(pd_data, ignore_index=True)
+        df = pd.DataFrame(data=data, columns=cols)
+        df["ISEN"] = isin
+        df["DATE"] = date
         return df
 
 
-def main(obj):
+class CleanFuncs:
+    @staticmethod
+    def dematad_clean(df):
+        return df.drop_duplicates(
+            subset=["DPID", "CLID"],
+            keep='first')
 
-    df = PrepareDf(get_cols(os.path.join(PATH, 'cols', 'cols.pk')), obj)
+    @staticmethod
+    def demathol_clean(df):
+        return df.drop_duplicates(
+            subset=["DPID", "CLID"],
+            keep='first')
+
+class ProcessDf:
+        
+    def processdematad(self, df, cols_dematad, first_time=True):
+        if first_time:
+            models.Dematad.bulk_create(df[cols_dematad].to_dict(orient="records"))
+        else:
+            models.Dematad.bulk_update(df[cols_dematad].to_dict(orient="records"))
+
+    def processdemathol(self, df, cols_demathol, first_time=True):
+        if first_time:
+            models.Demathol.bulk_create(df[cols_demathol].to_dict(orient="records"))
+        else:    
+            models.Demathol.bulk_update(df[cols_demathol].to_dict(orient="records"))
+
+def main(file_obj):
+
+    cols_df = get_cols(os.path.join(PATH, 'cols', 'cols.pk'))
     cols_dematad = get_cols(os.path.join(PATH, 'cols', 'dematad.pk'))
     cols_demathol = get_cols(os.path.join(PATH, 'cols', 'demathol.pk'))
+    
+    
+    if models.Dematad.objects.all():
+        for df in GetDataFrame.read_file_obj(file_obj, cols_df):
+            ProcessDf.processdematad(df, cols_dematad, True)
+            ProcessDf.processdemathol(df, cols_demathol, True)
 
-    # for i in df.dataframe.index:
-    #      function_dematad(df.loc[i].to_json(),
-
-    # dematad = df.dematad
-    # demathol = df.demathol
-    # conn = sqlite3.connect("MASS.db")
+    else:
+        for df in GetDataFrame.read_file_obj(file_obj, cols_df):
+            ProcessDf.processdematad(df, cols_dematad, False)
+            ProcessDf.processdemathol(df, cols_demathol, False)

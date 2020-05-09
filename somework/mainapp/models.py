@@ -1,9 +1,12 @@
+from decouple import config
 from django.db import models
 
+   
 
-class Dematad(models.Model):
-    DPID = models.TextField()
-    CLID = models.TextField()
+
+class Demathad(models.Model):
+    DPID =  models.models.TextField()
+    CLID = models.models.TextField()
     TYPE = models.TextField()
     SUBTYP = models.TextField()
     ACCAT = models.TextField()
@@ -64,13 +67,12 @@ class Dematad(models.Model):
     UID3RDHOL = models.TextField()
     PANGAR = models.TextField()
     UIDGAR = models.TextField()
-
-    def __str__(self):
-        return self.DPID
-
+    
+    class Meta:
+        unique_together = (('DPID', 'CLID'))
 
 class Demathol(models.Model):
-    DPID = models.TextField()
+    DPID =  models.TextField()
     CLID = models.TextField()
     FREEHOL = models.TextField()
     HOLLCK = models.TextField()
@@ -85,7 +87,11 @@ class Demathol(models.Model):
     HOLCMPOOL = models.TextField()
     HOLSET = models.TextField()
     ISEN = models.TextField()
-    DAT = models.TextField()
-
+    DATE = models.TextField()
+    
+    class Meta:
+        unique_together = (('DPID', 'CLID'))
+    
     def __str__(self):
         return self.DPID
+
