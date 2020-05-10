@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
 
 from .forms import EmailForm, MasterForm
-    
+
 # Create your views here.
 
 from .backend.mailer import emailpy
@@ -22,17 +22,17 @@ def master(request):
     if request.method == 'POST':
         form = MasterForm(request.POST, request.FILES)
         if form.is_valid():
-            
-            if request.POST['hidden'] == 'nsdlbenpos': 
-              nsdl.main(form.cleaned_data.get('filepath'))
-              print("Hello World"*89)
-              return HttpResponse("<h1>Process Completed</h1>")
+
+            if request.POST['hidden'] == 'nsdlbenpos':
+                nsdl.main(form.cleaned_data.get('filepath'))
+                return HttpResponse("<h1>Process Completed</h1>")
             else:
-              return  HttpResponse(cdsl.main(form.cleaned_data.get('filepath')))
+                cdsl.main(form.cleaned_data.get('filepath'))
+                return HttpResponse("<h1>Process Completed</h1>")
     else:
         form = MasterForm()
-    
-    return render(request, 'mainapp/master.html', {"form":form})
+
+    return render(request, 'mainapp/master.html', {"form": form})
 
 
 def report(request):
@@ -47,12 +47,11 @@ def email(request):
     if request.method == 'POST':
         form = EmailForm(request.POST, request.FILES)
         if form.is_valid():
-            emailpy.main(*list(map(lambda x:request.POST.get(x).strip(), 
-                                  ['host','emailaddress','password'])), 
-                        request.FILES["filepath"])
+            emailpy.main(*list(map(lambda x: request.POST.get(x).strip(),
+                                   ['host', 'emailaddress', 'password'])),
+                         request.FILES["filepath"])
 
-            
     else:
         form = EmailForm()
-    
-    return render(request, 'mainapp/email.html', {"form":form})
+
+    return render(request, 'mainapp/email.html', {"form": form})

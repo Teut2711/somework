@@ -1,39 +1,36 @@
-
-{% extends "mainapp/base.html" %} 
+{% extends "mainapp/base.html" %}
 {% load static %}
 
-  {% block content %}
+{% block content %}
 
- {% load crispy_forms_tags %}
+{% load crispy_forms_tags %}
 <link rel="stylesheet" type="text/css" href="{% static 'mainapp/master.css' %}">
 
-<div class="mainbox" >
-    
-    <ul class="list-group nsdlbenpos">
-      <li class="list-group-item"><button class="btn btn-primary">NSDL Benpos Import</button></li>
+<div class="mainbox">
 
-      
-    </ul>
-    <ul class="list-group cdslbenpos">
-      <li class="list-group-item"><button class="btn btn-primary">CDSL Benpos Import</button></li>
-      
-    </ul>
+  <ul class="list-group nsdlbenpos">
+    <li class="list-group-item"><button class="btn btn-primary">NSDL Benpos Import</button></li>
+
+
+  </ul>
+  <ul class="list-group cdslbenpos">
+    <li class="list-group-item"><button class="btn btn-primary">CDSL Benpos Import</button></li>
+
+  </ul>
 </div>
 
 <div class="formclass">
-  
 
-    <form action="" method="POST" enctype="multipart/form-data">   
-                {% csrf_token %}   
-                {{ form|crispy }}
-                   
-    <input type="submit" class="btn btn-primary btn-lg submitfile" value="Submit">
+
+  <form action="" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form|crispy }}
     <input type="hidden" name="hidden" value="">
 
-    </form>
-    <div class="loader">Loading...</div>    
-    
-</div>
+    <input type="submit" class="btn btn-primary btn-lg submitfile" value="Submit">
 
+  </form>
+  <div class="lds-ring"><div></div><div></div><div></div><div></div></div>
+</div>  
 <script src="{% static "mainapp/master.js" %}"></script>
 {% endblock %}
