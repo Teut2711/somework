@@ -73,7 +73,7 @@ class ProcessDf:
             models.Demathol.bulk_update(df[cols_demathol].to_dict(orient="records"))
 
 def main(file_obj):
-
+    import time;time.sleep(30); return "Done"
     cols_df = get_cols(os.path.join(PATH, 'cols', 'cols.pk'))
     cols_dematad = get_cols(os.path.join(PATH, 'cols', 'dematad.pk'))
     cols_demathol = get_cols(os.path.join(PATH, 'cols', 'demathol.pk'))

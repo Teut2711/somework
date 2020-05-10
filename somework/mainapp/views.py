@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
 
@@ -22,11 +23,12 @@ def master(request):
         form = MasterForm(request.POST, request.FILES)
         if form.is_valid():
             
-            if request.POST['hidden'] == 'nsdlbenpos':
-                nsdl.main(form.cleaned_data.get('filepath'))
+            if request.POST['hidden'] == 'nsdlbenpos': 
+              nsdl.main(form.cleaned_data.get('filepath'))
+              print("Hello World"*89)
+              return HttpResponse("<h1>Process Completed</h1>")
             else:
-                cdsl.main(form.cleaned_data.get('filepath'))
-            
+              return  HttpResponse(cdsl.main(form.cleaned_data.get('filepath')))
     else:
         form = MasterForm()
     

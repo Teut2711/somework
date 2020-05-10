@@ -4,9 +4,9 @@ from django.db import models
    
 
 
-class Demathad(models.Model):
-    DPID =  models.models.TextField()
-    CLID = models.models.TextField()
+class Dematad(models.Model):
+    DPID = models.TextField()
+    CLID = models.TextField()
     TYPE = models.TextField()
     SUBTYP = models.TextField()
     ACCAT = models.TextField()

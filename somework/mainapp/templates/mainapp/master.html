@@ -27,9 +27,11 @@
                 {% csrf_token %}   
                 {{ form|crispy }}
                    
-    <input type="submit" class="btn btn-primary btn-lg"  value="Submit">
+    <input type="submit" class="btn btn-primary btn-lg submitfile" value="Submit">
+    <input type="hidden" name="hidden" value="">
+
     </form>
-        
+    <div class="loader">Loading...</div>    
     
 </div>
 
